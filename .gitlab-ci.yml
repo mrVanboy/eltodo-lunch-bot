@@ -1,0 +1,46 @@
+---
+# Globally defined image
+image: golang:1.10
+
+stages:
+  - test
+  - build
+  - deploy
+
+
+before_script:
+  # Download the binary to bin folder in $GOPATH
+  - curl -L -s https://github.com/golang/dep/releases/download/v0.4.1/dep-linux-amd64 -o /usr/bin/dep
+  # Make the binary executable
+  - chmod +x /usr/bin/dep
+  # Set up GOPATH
+  - GOPATH=$CI_PROJECT_DIR
+  - cd src/eltodo-lunch-bot
+  - dep ensure
+
+test 1:2:
+  stage: test
+  script:
+    - go vet ./...
+  cache:
+    paths:
+    - pkg
+
+build-image:
+  image: docker
+  before_script:
+
+  script:
+    - docker build -q .
+  stage: build
+
+upload-develop:
+  image: docker
+  stage: deploy
+  before_script:
+
+  script:
+    - docker build -q -t $CI_REGISTRY_IMAGE:develop .
+    - docker push $CI_REGISTRY_IMAGE:develop
+  only:
+    - master
