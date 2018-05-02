@@ -39,6 +39,7 @@ upload-develop:
   stage: deploy
   before_script:
     - echo "upload image job"
+    - echo $CI_JOB_TOKEN | docker login -u gitlab-ci-token --password-stdin $CI_REGISTRY
   script:
     - docker build -q -t $CI_REGISTRY_IMAGE:develop .
     - docker push $CI_REGISTRY_IMAGE:develop
