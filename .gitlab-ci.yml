@@ -29,7 +29,7 @@ test 1:2:
 build-image:
   image: docker
   before_script:
-
+    - echo "build image job"
   script:
     - docker build -q .
   stage: build
@@ -38,7 +38,7 @@ upload-develop:
   image: docker
   stage: deploy
   before_script:
-
+    - echo "upload image job"
   script:
     - docker build -q -t $CI_REGISTRY_IMAGE:develop .
     - docker push $CI_REGISTRY_IMAGE:develop
