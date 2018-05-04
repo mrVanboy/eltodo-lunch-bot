@@ -11,6 +11,7 @@ import (
 	"gopkg.in/robfig/cron.v2"
 	"sync"
 	"strconv"
+	"flag"
 )
 
 var menicka []menu.IMenu
@@ -35,6 +36,14 @@ func main() {
 		panic(err)
 	}
 
+	runOnce := flag.Bool("run_once", false, "define `-run_once` flag for skipping creating cron job and evaluate program only once just now")
+	flag.Parse()
+	if runOnce != nil && *runOnce == true {
+		fmt.Fprintln(os.Stdout, `-run_once flag was declared. Skipping cron and running just now`)
+		getAndSend()
+		return
+	}
+
 	c := cron.New()
 	cronPattern := fmt.Sprintf(`TZ=%s %s`, cfg.Get().TimeZone, cfg.Get().Cron)
 
@@ -57,8 +66,17 @@ func main() {
 func getAndSend(){
 	var errArr []error
 	for _, m := range menicka {
-		dailyMenu, err := m.Load(menu.Weekday(time.Now().In(loc).Weekday()))
-		time.Now().Location()
+		var dailyMenu string
+		var err error
+
+		for attempts := 0; attempts < 3; attempts++ {
+			dailyMenu, err = m.Load(menu.Weekday(time.Now().In(loc).Weekday()))
+			if err == nil {
+				attempts = 3
+			}
+			fmt.Fprintf(os.Stderr, "Retry after 5 sec to load menu for %s, because of error: %s\n", m.GetPlaceName(), err)
+			time.Sleep(5*time.Second)
+		}
 		if err != nil {
 			fmt.Fprintf(os.Stderr, "%s\n",err.Error())
 			errArr = append(errArr, errors.New(`getting dm from `+ m.GetPlaceName() + `error: ` + err.Error()))
@@ -72,6 +90,7 @@ func getAndSend(){
 			Text: dailyMenu,
 		}
 		webhook.NewAttachment(a)
+		fmt.Fprintf(os.Stdout, "Place %s was parsed and added to attachments. Url: %s\n", m.GetPlaceName(), m.GetUrl())
 	}
 	j, _ := webhook.BuildJSON()
 	fmt.Fprint(os.Stdout, string(j))

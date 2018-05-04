@@ -9,6 +9,7 @@ RUN chmod +x /bin/dep && \
 # final stage
 FROM alpine
 WORKDIR /app
-COPY --from=build-env /go/src/eltodo-lunch-bot/goapp /app
 RUN apk --no-cache add poppler-utils tzdata  ca-certificates
+ENV PATH_PDFTOTEXT=pdftotext
+COPY --from=build-env /go/src/eltodo-lunch-bot/goapp /app
 ENTRYPOINT ./goapp

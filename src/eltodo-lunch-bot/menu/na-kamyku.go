@@ -3,7 +3,6 @@ package menu
 import (
 	"io/ioutil"
 	"errors"
-	"fmt"
 	"os"
 	"net/http"
 	"io"
@@ -64,7 +63,7 @@ func (p *NaKamyku) downloadPdf() (*os.File, error){
 	output, err := p.createTempFile()
 	fileName := output.Name()
 
-	fmt.Println("Downloading", url, "to", fileName)
+	// fmt.Println("Downloading", url, "to", fileName)
 	if err != nil {
 		return nil, errors.New("Error while creating " + fileName + "-" + err.Error())
 	}
@@ -75,12 +74,12 @@ func (p *NaKamyku) downloadPdf() (*os.File, error){
 	}
 	defer response.Body.Close()
 
-	n, err := io.Copy(output, response.Body)
+	_, err = io.Copy(output, response.Body)
 	if err != nil {
 		return nil, errors.New("error while downloading" + url + "-" + err.Error())
 	}
 
-	fmt.Println(n, "bytes downloaded.")
+	// fmt.Println(n, "bytes downloaded.")
 
 	return output, nil
 
