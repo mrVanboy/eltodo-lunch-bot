@@ -74,7 +74,7 @@ func getAndSend(){
 			if err == nil {
 				attempts = 3
 			}
-			fmt.Fprintf(os.Stderr, "Retry after 5 sec to load menu for %s, because of error: %s\n", m.GetPlaceName(), err)
+			fmt.Fprintf(os.Stderr, "Retry after 5 sec to load menu for %s, because of error: %s\n", m.GetPlaceName(), err.Error())
 			time.Sleep(5*time.Second)
 		}
 		if err != nil {
