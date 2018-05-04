@@ -57,6 +57,7 @@ upload-latest:
   stage: deploy
   before_script:
     - echo "upload image job"
+    - echo $CI_JOB_TOKEN | docker login -u gitlab-ci-token --password-stdin $CI_REGISTRY
   script:
     - docker build -q -t $CI_REGISTRY_IMAGE:latest -t $CI_REGISTRY_IMAGE:$CI_BUILD_TAG .
     - docker push $CI_REGISTRY_IMAGE:$CI_BUILD_TAG
@@ -75,6 +76,7 @@ run-from-schedule:
   stage: deploy
   before_script:
     - echo "=== Running application from schedule ===="
+    - echo $CI_JOB_TOKEN | docker login -u gitlab-ci-token --password-stdin $CI_REGISTRY
   script:
     - |
       docker run --rm \
