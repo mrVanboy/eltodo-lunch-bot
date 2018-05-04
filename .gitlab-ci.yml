@@ -71,11 +71,19 @@ upload-latest:
     - schedules
 
 run-from-schedule:
-  iamge: docker
+  image: docker
   stage: deploy
-    before_script:
-      - echo "=== Running application from schedule ===="
-    script:
-      - docker run --rm $CI_REGISTRY_IMAGE:latest -run_once
+  before_script:
+    - echo "=== Running application from schedule ===="
+  script:
+    - |
+      docker run --rm \
+      	-e WEBHOOK_MAIN_URL=$WEBHOOK_MAIN_URL \
+      	-e WEBHOOK_DEBUG_URL=$WEBHOOK_DEBUG_URL \
+      	-e URL_BK=$URL_BK \
+      	-e URL_DC=$URL_DC \
+      	-e URL_NK=$URL_NK \
+      	-e URL_PP=$URL_PP \
+        $CI_REGISTRY_IMAGE:latest -run_once
   only:
     - schedules
