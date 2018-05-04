@@ -72,7 +72,7 @@ func getAndSend(){
 		for attempts := 0; attempts < 3; attempts++ {
 			dailyMenu, err = m.Load(menu.Weekday(time.Now().In(loc).Weekday()))
 			if err == nil {
-				attempts = 3
+				break
 			}
 			fmt.Fprintf(os.Stderr, "Retry after 5 sec to load menu for %s, because of error: %s\n", m.GetPlaceName(), err.Error())
 			time.Sleep(5*time.Second)
