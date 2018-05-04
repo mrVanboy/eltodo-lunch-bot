@@ -74,6 +74,8 @@ upload-latest:
 run-from-schedule:
   image: docker
   stage: deploy
+  variables:
+    GIT_STRATEGY: none
   before_script:
     - echo "=== Running application from schedule ===="
     - echo $CI_JOB_TOKEN | docker login -u gitlab-ci-token --password-stdin $CI_REGISTRY
