@@ -88,12 +88,12 @@ func (p DiCarlo) getItems(root *html.Node, id int) (string, error) {
 	}
 	currentDayNode := n[id-1]
 
-	htmlquery.FindEach(currentDayNode, `//div[contains(@class, "food-menu__row")]`, func(_ int, node *html.Node) {
-		priceNode := htmlquery.FindOne(node, `//div[contains(@class, "price")]`)
+	htmlquery.FindEach(currentDayNode, `//table[contains(@class, "food-menu__table-table")]//tr`, func(_ int, node *html.Node) {
+		priceNode := htmlquery.FindOne(node, `//*[contains(@class, "food-menu__price")]`)
 		price := htmlquery.InnerText(priceNode)
 		price = strings.TrimSpace(price)
 
-		foodNodes := htmlquery.Find(node, `//div[contains(@class, "food-menu__desc")]/*[not(self::div)]`)
+		foodNodes := htmlquery.Find(node, `//*[contains(@class, "food-menu__desc")]/*[not(self::div)]`)
 		var food string
 		for _, foodNode := range foodNodes {
 			content := strings.TrimSpace(htmlquery.InnerText(foodNode))
